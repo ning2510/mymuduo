@@ -1,98 +1,53 @@
-#include "dispatcher.h"
-#include "codec.h"
-#include "chatMsg.pb.h"
+#include "client.h"
 
-#include "mymuduo/Logger.h"
-#include "mymuduo/EventLoop.h"
-#include "mymuduo/TcpClient.h"
-#include "mymuduo/EventLoopThread.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <mutex>
+ChatClient::ChatClient(EventLoop *loop,
+            const InetAddress &serverAddr)
+: loop_(loop),
+    client_(loop_, serverAddr, "ChatClient"),
+    dispatcher_(std::bind(&ChatClient::onUnknownMessage, this, _1, _2, _3)),
+    codec_(std::bind(&ProtobufDispatcher::onProtobufMessage, &dispatcher_, _1, _2, _3))
+{
+    dispatcher_.registerMessageCallback<muduo::Answer>(
+        std::bind(&ChatClient::onAnswer, this, _1, _2, _3));
 
-using namespace std;
-using namespace std::placeholders;
+    client_.setConnectionCallback(std::bind(&ChatClient::onConnection, this, _1));
+    client_.setMessageCallback(
+        std::bind(&ProtobufCodec::onMessage, &codec_, _1, _2, _3));
+}
 
-using ChatPtr = std::shared_ptr<muduo::Chat>;
-using AddPtr = std::shared_ptr<muduo::Add>;
-using CreateGroupPtr = std::shared_ptr<muduo::CreateGroup>;
-using RegisterPtr = std::shared_ptr<muduo::Register>;
-using LoginPtr = std::shared_ptr<muduo::Login>;
-using LogoutPtr = std::shared_ptr<muduo::Logout>;
-using AnswerPtr = std::shared_ptr<muduo::Answer>;
+void ChatClient::onConnection(const TcpConnectionPtr &conn) {
+    LOG_INFO("%s -> %s is %s",
+                conn->localAddress().toIpPort().c_str(),
+                conn->peerAddress().toIpPort().c_str(),
+                conn->connected() ? "UP" : "DOWN");
 
-class ChatClient : noncopyable {
-public:
-    ChatClient(EventLoop *loop,
-               const InetAddress &serverAddr)
-    : loop_(loop),
-      client_(loop_, serverAddr, "ChatClient"),
-      dispatcher_(std::bind(&ChatClient::onUnknownMessage, this, _1, _2, _3)),
-      codec_(std::bind(&ProtobufDispatcher::onProtobufMessage, &dispatcher_, _1, _2, _3))
-    {
-        dispatcher_.registerMessageCallback<muduo::Answer>(
-            std::bind(&ChatClient::onAnswer, this, _1, _2, _3));
-
-        client_.setConnectionCallback(std::bind(&ChatClient::onConnection, this, _1));
-        client_.setMessageCallback(
-            std::bind(&ProtobufCodec::onMessage, &codec_, _1, _2, _3));
+    if(conn->connected()) {
+        unique_lock<mutex> lock(mutex_);
+        conn_ = conn;
+    } else {
+        unique_lock<mutex> lock(mutex_);
+        conn_.reset();
     }
+}
 
-    void connect() {
-        client_.connect();
-    }
+void ChatClient::onUnknownMessage(const TcpConnectionPtr &,
+                            const MessagePtr &message,
+                            Timestamp)
+{
+    LOG_INFO("onUnknownMessage %s", message->GetTypeName().c_str());
+}
 
-    void disconnect() {
-        client_.disconnect();
-    }
+void ChatClient::onAnswer(const TcpConnectionPtr &,
+                const AnswerPtr &message,
+                Timestamp)
+{
+    LOG_INFO("onAnswer: %s", message->GetTypeName().c_str());
+    cout << "msgid = " << message->msgid() << endl;
+    cout << "error = " << message->error() << endl;
+    cout << "id = " << message->id() << endl;
+}
 
-    void send(google::protobuf::Message *messageToSend) {
-        if(conn_) {
-            codec_.send(conn_, *messageToSend);
-        }
-    }
-
-private:
-    void onConnection(const TcpConnectionPtr &conn) {
-        LOG_INFO("%s -> %s is %s",
-                  conn->localAddress().toIpPort().c_str(),
-                  conn->peerAddress().toIpPort().c_str(),
-                  conn->connected() ? "UP" : "DOWN");
-
-        if(conn->connected()) {
-            unique_lock<mutex> lock(mutex_);
-            conn_ = conn;
-        } else {
-            unique_lock<mutex> lock(mutex_);
-            conn_.reset();
-        }
-    }
-    
-    void onUnknownMessage(const TcpConnectionPtr &,
-                          const MessagePtr &message,
-                          Timestamp)
-    {
-        LOG_INFO("onUnknownMessage %s", message->GetTypeName().c_str());
-    }
-
-    void onAnswer(const TcpConnectionPtr &,
-                  const AnswerPtr &message,
-                  Timestamp)
-    {
-        LOG_INFO("onAnswer: %s", message->GetTypeName().c_str());
-        cout << "msgid = " << message->msgid() << endl;
-        cout << "error = " << message->error() << endl;
-        cout << "id = " << message->id() << endl;
-    }
-
-    EventLoop *loop_;
-    TcpClient client_;
-    TcpConnectionPtr conn_;
-    ProtobufDispatcher dispatcher_;
-    ProtobufCodec codec_;
-    mutex mutex_;
-};
 
 int main(int argc, char **argv) {
     string ip = "127.0.0.1";
