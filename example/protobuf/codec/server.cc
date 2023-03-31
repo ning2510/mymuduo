@@ -3,8 +3,8 @@
 
 ChatServer::ChatServer(EventLoop *loop, const InetAddress &listenAddr)
     : server_(loop, listenAddr, "ChatServer"),
-        dispatcher_(std::bind(&ChatServer::onUnknownMessage, this, _1, _2, _3)),
-        codec_(std::bind(&ProtobufDispatcher::onProtobufMessage, &dispatcher_, _1, _2, _3))
+      dispatcher_(std::bind(&ChatServer::onUnknownMessage, this, _1, _2, _3)),
+      codec_(std::bind(&ProtobufDispatcher::onProtobufMessage, &dispatcher_, _1, _2, _3))
 {
     dispatcher_.registerMessageCallback<muduo::Chat>(
         std::bind(&ChatServer::onChat, this, _1, _2, _3));
@@ -145,6 +145,8 @@ int main(int argc, char **argv) {
     if(argc > 1) {
         port = atoi(argv[1]);
     }
+
+    LOG_INFO("[conf] use port = %d", port);
 
     EventLoop loop;
     InetAddress serverAddr(port);

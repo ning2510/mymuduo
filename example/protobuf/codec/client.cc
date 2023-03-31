@@ -3,10 +3,10 @@
 
 ChatClient::ChatClient(EventLoop *loop,
             const InetAddress &serverAddr)
-: loop_(loop),
-    client_(loop_, serverAddr, "ChatClient"),
-    dispatcher_(std::bind(&ChatClient::onUnknownMessage, this, _1, _2, _3)),
-    codec_(std::bind(&ProtobufDispatcher::onProtobufMessage, &dispatcher_, _1, _2, _3))
+    : loop_(loop),
+      client_(loop_, serverAddr, "ChatClient"),
+      dispatcher_(std::bind(&ChatClient::onUnknownMessage, this, _1, _2, _3)),
+      codec_(std::bind(&ProtobufDispatcher::onProtobufMessage, &dispatcher_, _1, _2, _3))
 {
     dispatcher_.registerMessageCallback<muduo::Answer>(
         std::bind(&ChatClient::onAnswer, this, _1, _2, _3));
@@ -57,6 +57,8 @@ int main(int argc, char **argv) {
         port = atoi(argv[1]);
         ip = argv[2];
     }
+
+    LOG_INFO("[conf] use ip = %s, port = %d", ip.c_str(), port);
 
     EventLoopThread loopThread;
     InetAddress serverAddr(port, ip);
