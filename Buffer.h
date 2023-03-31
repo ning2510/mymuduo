@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <arpa/inet.h>
+#include <string.h>
 
 // 网络库底层的缓冲区类型
 class Buffer {
@@ -34,6 +36,21 @@ public:
     // 返回缓冲区中可读数据的起始地址
     const char *peek() const {
         return begin() + readerIndex_;
+    }
+
+    int32_t peekInt32() const {
+        if(readableBytes() >= sizeof(int32_t)) {
+            int32_t nw32 = 0;
+            ::memcpy(&nw32, peek(), sizeof(nw32));
+            int32_t host32 = ntohl(nw32);
+            return host32;
+        }
+    }
+
+    void hasWritten(size_t len) {
+        if(len <= writeableBytes()) {
+            writerIndex_ += len;
+        }
     }
 
     void retrieve(size_t len) {
@@ -74,6 +91,15 @@ public:
         ensureWriteableBytes(len);
         std::copy(data, data + len, beginWirte());
         writerIndex_ += len;
+    }
+
+    void append(const void *data, size_t len) {
+        append(static_cast<const char *>(data), len);
+    }
+
+    void appendInt32(int32_t x) {
+        int32_t nw32 = ::htonl(x);
+        append(&nw32, sizeof(nw32));
     }
 
     void prepend(const void *data, size_t len) {

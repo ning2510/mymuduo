@@ -1,0 +1,51 @@
+客户端用户注册
+username
+password
+
+return: id
+
+客户端用户登录
+id
+password
+
+
+添加好友
+msgid
+id (当前用户)
+friendId
+
+
+好友聊天
+msgid
+id (当前用户)
+name (当前用户)
+todId
+msg
+time (系统给出)
+
+
+群组聊天
+msgid
+id (当前用户)
+name (当前用户)
+groupId
+msg
+time (系统给出)
+
+创建群组
+msgid
+id (当前用户)
+groupName
+groupDesc
+
+return: groupId
+
+添加群组
+msgid
+id (当前用户)
+groupId
+
+
+退出
+msgid
+id (当前用户)

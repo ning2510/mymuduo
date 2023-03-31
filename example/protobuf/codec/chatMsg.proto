@@ -1,0 +1,59 @@
+syntax = "proto3";
+package muduo;
+
+/* msgid = ONE_CHAT_MSG: 好友聊天, toId 为 friendId
+   msgid = GROUP_CHAT_MSG: 群组聊天, toId 为 groupId */
+message Chat {
+    int32 msgid = 1;
+    int32 id = 2;
+    string name = 3;
+    int32 toid = 4;
+    string message = 5;
+    string time = 6;
+}
+
+/* msgid = ADD_FRIEND_MSG: 添加好友, toId 为 friendId
+   msgid = ADD_GROUP_MSG: 添加群组, toId 为 groupId */
+message Add {
+    int32 msgid = 1;
+    int32 id = 2;
+    int32 toid = 3;
+}
+
+/* 创建群组 CREATE_GROUP_MSG */
+message CreateGroup {
+    int32 msgid = 1;
+    int32 id = 2;
+    string name = 3;
+    string desc = 4;
+}
+
+/* 注册 REG_MSG */
+message Register {
+    int32 msgid = 1;
+    string username = 2;
+    string password = 3;
+}
+
+/* 登录 LOGIN_MSG */
+message Login {
+    int32 msgid = 1;
+    int32 id = 2;
+    string password = 3;
+}
+
+/* 注销 LOGOUT_MSG */
+message Logout {
+    int32 msgid = 1;
+    int32 id = 2;
+}
+
+/* 登录响应 LOGIN_MSG_ACK
+   注册响应 REG_MSG_ACK   ->   return userid
+   建群响应 CREATE_GROUP_ACK   ->   return groupid
+*/
+message Answer {
+    int32 msgid = 1;
+    int32 error = 2;
+    int32 id = 3;
+}

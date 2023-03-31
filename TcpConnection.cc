@@ -71,7 +71,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len) {
     size_t remaining = len;
     bool faultError = false;
 
-    LOG_INFO("send data = %s, len = %u", (const char *)data, len);
+    LOG_INFO("send data = %s, len = %lu", (const char *)data, len);
     // 如果之前调用过该 TcpConnection 的 shutdown，就不能再发送了
     if(state_ == kDisconnected) {
         LOG_ERROR("disconnected, give up writing!");
