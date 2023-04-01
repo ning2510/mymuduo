@@ -2,11 +2,10 @@
 #define _TCPCLIENT_H
 
 #include "TcpConnection.h"
+#include "Connector.h"
 
 #include <string>
 #include <mutex>
-
-class Connector;
 
 using ConnectorPtr = std::shared_ptr<Connector>;
 

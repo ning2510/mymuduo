@@ -1,6 +1,5 @@
 #include "TcpClient.h"
 #include "Logger.h"
-#include "Connector.h"
 #include "EventLoop.h"
 
 #include <strings.h>
