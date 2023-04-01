@@ -157,7 +157,7 @@ void Connector::handleError() {
 }
 
 void Connector::retry(int sockfd) {
-    ::close(sockfd) < 0;
+    ::close(sockfd);
     setState(kDisconnected);
     if(connect_) {
         LOG_INFO("Connector::retry connect to %s", serverAddr_.toIpPort().c_str());
