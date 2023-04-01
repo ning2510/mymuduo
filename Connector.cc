@@ -103,7 +103,7 @@ void Connector::connect() {
         LOG_ERROR("Unexpected error in Connector::startInLoop %d", savedErrno);
         ::close(sockfd);
         // connectErrorCallback_();
-        break;;
+        break;
     }
 }
 
