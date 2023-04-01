@@ -18,7 +18,8 @@ Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
       serverAddr_(serverAddr),
       connect_(false),
       state_(kDisconnected),
-      retryDelayMs_(kInitRetryDelayMs) 
+      retryDelayMs_(kInitRetryDelayMs),
+      retryTimes_(5)
 {
     LOG_INFO("Connector[%p] constructor", this);
 }
@@ -159,7 +160,7 @@ void Connector::handleError() {
 void Connector::retry(int sockfd) {
     ::close(sockfd);
     setState(kDisconnected);
-    if(connect_) {
+    if(retryTimes_-- > 0 && connect_) {
         LOG_INFO("Connector::retry connect to %s", serverAddr_.toIpPort().c_str());
         startInLoop();
     }

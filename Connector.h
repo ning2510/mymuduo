@@ -66,7 +66,7 @@ private:
     NewConnectionCallback newConnectionCallback_;
 
     int retryDelayMs_;
-
+    int retryTimes_;
 };
 
 
