@@ -1,6 +1,8 @@
 syntax = "proto3";
 package muduo;
 
+// protoc --cpp_out=. ChatMsg.proto
+
 /* msgid = ONE_CHAT_MSG: 好友聊天, toId 为 friendId
    msgid = GROUP_CHAT_MSG: 群组聊天, toId 为 groupId */
 message Chat {
