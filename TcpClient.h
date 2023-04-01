@@ -22,6 +22,8 @@ public:
     void disconnect();
     void stop();
 
+    bool isConnected() const { return connector_->isConnected(); }
+
     TcpConnectionPtr connection() {
         std::unique_lock<std::mutex> lock(mutex_);
         return connection_;

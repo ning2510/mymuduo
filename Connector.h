@@ -25,6 +25,10 @@ public:
     void restart();
     void stop();
 
+    bool isConnected() const {
+        return state_ == kConnected;
+    }
+
     const InetAddress &serverAddress() const { return serverAddr_; }
 
 private:
