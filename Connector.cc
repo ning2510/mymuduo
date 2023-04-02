@@ -18,8 +18,7 @@ Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
       serverAddr_(serverAddr),
       connect_(false),
       state_(kDisconnected),
-      retryDelayMs_(kInitRetryDelayMs),
-      retryTimes_(5)
+      retryDelayMs_(kInitRetryDelayMs)
 {
     LOG_INFO("Connector[%p] constructor", this);
 }
@@ -113,6 +112,10 @@ void Connector::connecting(int sockfd) {
     channel_->setWriteCallback(std::bind(&Connector::handleWrite, this));
     channel_->setErrorCallback(std::bind(&Connector::handleError, this));
 
+    /**
+     *   - 如果当连接可用后，且缓存区不满的情况下，调用 epoll_ctl 将 fd 重新注册到 epoll 事件池
+     * (使用EPOLL_CTL_MOD)，这时也会触发 EPOLLOUT 事件
+     */
     channel_->enableWriting();
 }
 
@@ -160,10 +163,13 @@ void Connector::handleError() {
 void Connector::retry(int sockfd) {
     ::close(sockfd);
     setState(kDisconnected);
-    if(retryTimes_-- > 0 && connect_) {
-        LOG_INFO("Connector::retry connect to %s", serverAddr_.toIpPort().c_str());
-        startInLoop();
-    }
+
+    /* retry is disabled, because not add TimerQueue */
+
+    // if(connect_) {
+    //     LOG_INFO("Connector::retry connect to %s", serverAddr_.toIpPort().c_str());
+    //     startInLoop();
+    // }
 }
 
 void Connector::resetChannel() {

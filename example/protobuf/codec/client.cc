@@ -139,11 +139,11 @@ int main(int argc, char **argv) {
 
     client.send(&answer);
 
-    int num;
-    while(1) {
-        cin >> num;
-        if(num == 0) break;
-    }
+    // int num;
+    // while(1) {
+    //     cin >> num;
+    //     if(num == 0) break;
+    // }
     // string line;
     // while(getline(cin, line)) {
 
