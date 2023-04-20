@@ -1,3 +1,5 @@
+all: server client
+
 server :
 	g++ -o server testServer.cc -lmymuduo -lpthread -g
 

@@ -12,6 +12,7 @@
 #include <mutex>
 
 using namespace std;
+using namespace mymuduo;
 using namespace std::placeholders;
 
 class EchoClient {

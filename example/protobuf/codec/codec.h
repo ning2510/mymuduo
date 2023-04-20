@@ -6,6 +6,7 @@
 
 #include <google/protobuf/message.h>
 
+using namespace mymuduo;
 using MessagePtr = std::shared_ptr<google::protobuf::Message>;
 
 class ProtobufCodec : noncopyable {

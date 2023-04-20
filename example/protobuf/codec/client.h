@@ -15,6 +15,7 @@
 #include <mutex>
 
 using namespace std;
+using namespace mymuduo;
 using namespace std::placeholders;
 
 using ChatPtr = std::shared_ptr<muduo::Chat>;

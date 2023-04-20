@@ -7,6 +7,8 @@
 
 #include <functional>
 
+using namespace mymuduo;
+
 class Codec : noncopyable {
 public:
     using StringMsgCallback = std::function<void(const TcpConnectionPtr &, 

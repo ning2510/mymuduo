@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <memory>
 
+using namespace mymuduo;
 using MessagePtr = std::shared_ptr<google::protobuf::Message>;
 
 class Callback : noncopyable {

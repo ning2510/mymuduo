@@ -1,3 +1,5 @@
+all: server client
+
 server :
 	g++ -o server server.cc chatMsg.pb.cc codec.cc -lmymuduo -lprotobuf -lpthread -g
 
