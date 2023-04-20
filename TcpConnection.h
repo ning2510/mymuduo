@@ -11,6 +11,8 @@
 #include "Buffer.h"
 #include "Timestamp.h"
 
+namespace mymuduo {
+
 class Channel;
 class EventLoop;
 class Socket;
@@ -116,5 +118,6 @@ private:
     size_t sendMsgLen;
 };
 
+}   // namespace mymuduo
 
 #endif

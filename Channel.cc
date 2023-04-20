@@ -3,6 +3,8 @@
 #include "Logger.h"
 #include <sys/epoll.h>
 
+namespace mymuduo {
+
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::kWriteEvent = EPOLLOUT;
@@ -83,3 +85,5 @@ void Channel::handleEventWithGuard(Timestamp receiveTime) {
     }
 
 }
+
+}   // namespace mymuduo

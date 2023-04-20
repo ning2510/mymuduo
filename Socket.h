@@ -3,6 +3,8 @@
 
 #include "noncopyable.h"
 
+namespace mymuduo {
+
 class InetAddress;
 
 // 封装 socket fd
@@ -27,5 +29,7 @@ public:
 private:
     const int sockfd_;
 };
+
+}   // namespace mymuduo
 
 #endif

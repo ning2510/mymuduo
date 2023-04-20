@@ -11,6 +11,8 @@
 #include <memory>
 #include <mutex>
 
+namespace mymuduo {
+
 class Channel;
 class Poller;
 
@@ -85,5 +87,7 @@ private:
 
 
 };
+
+}   // namespace mymuduo
 
 #endif

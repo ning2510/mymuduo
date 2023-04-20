@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+namespace mymuduo {
+
 static int createNonblocking() {
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
     if(sockfd < 0) {
@@ -56,3 +58,5 @@ void Acceptor::handleRead() {
         }
     }
 }
+
+}   // namespace mymuduo

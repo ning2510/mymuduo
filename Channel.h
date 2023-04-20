@@ -6,6 +6,8 @@
 #include <functional>
 #include <memory>
 
+namespace mymuduo {
+
 class EventLoop;
 
 /**
@@ -81,5 +83,7 @@ private:
 	EventCallback closeCallback_;
 	EventCallback errorCallback_;
 };
+
+}	// namespace mymuduo
 
 #endif

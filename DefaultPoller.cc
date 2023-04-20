@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+namespace mymuduo {
+
 Poller *Poller::newDefaultPoller(EventLoop *loop) {
     if(::getenv("MUDUO_USE_POLL")) {
         // 生成 poll 实例
@@ -12,3 +14,5 @@ Poller *Poller::newDefaultPoller(EventLoop *loop) {
         return new EPollPoller(loop);
     }
 }
+
+}   // namespace mymuduo

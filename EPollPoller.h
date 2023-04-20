@@ -6,6 +6,8 @@
 #include "Poller.h"
 #include "Timestamp.h"
 
+namespace mymuduo {
+
 class Channel;
 
 /**
@@ -39,5 +41,6 @@ private:
 
 };
 
+}	// namespace mymuduo
 
 #endif

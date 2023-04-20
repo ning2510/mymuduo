@@ -9,6 +9,8 @@
 
 #include "noncopyable.h"
 
+namespace mymuduo {
+
 class Thread : noncopyable {
 public:
 	using ThreadFunc = std::function<void()>;
@@ -37,5 +39,7 @@ private:
 	std::string name_;
 	static std::atomic_int32_t numCreated_;
 };
+
+}	// namespace mymuduo
 
 #endif

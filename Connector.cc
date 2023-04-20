@@ -5,6 +5,8 @@
 
 #include <errno.h>
 
+namespace mymuduo {
+
 static int createNonblocking() {
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
     if(sockfd < 0) {
@@ -184,3 +186,5 @@ int Connector::removeAndResetChannel() {
     loop_->queueInLoop(std::bind(&Connector::resetChannel, this));
     return sockfd;
 }
+
+}   // namespace mymuduo

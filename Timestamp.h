@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+namespace mymuduo {
+
 // 时间类
 class Timestamp {
 public:
@@ -14,5 +16,7 @@ public:
 private:
 	int64_t microSecondSinceEpoch_;
 };
+
+}	// namespace mymuduo
 
 #endif

@@ -2,6 +2,8 @@
 #include "Timestamp.h"
 #include <iostream>
 
+namespace mymuduo {
+
 // 获取日志唯一的实例对象
 Logger &Logger::instance() {
     static Logger logger;
@@ -37,3 +39,5 @@ void Logger::log(std::string msg) {
     std::cout << Timestamp::now().toString() << " : " << msg << std::endl;
 
 }
+
+}   // namespace mymuduo

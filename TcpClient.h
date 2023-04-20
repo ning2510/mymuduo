@@ -7,6 +7,8 @@
 #include <string>
 #include <mutex>
 
+namespace mymuduo {
+
 using ConnectorPtr = std::shared_ptr<Connector>;
 
 class TcpClient : noncopyable {
@@ -64,5 +66,7 @@ private:
 
     TcpConnectionPtr connection_;
 };
+
+}   // namespace mymuduo
 
 #endif

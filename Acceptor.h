@@ -7,6 +7,8 @@
 
 #include "noncopyable.h"
 
+namespace mymuduo {
+
 class EventLoop;
 class InetAddress;
 
@@ -35,5 +37,7 @@ private:
     NewConnectionCallback newConnectionCallback_;
     bool listening_;
 };
+
+}   // namespace mymuduo
 
 #endif

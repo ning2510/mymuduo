@@ -1,6 +1,8 @@
 #include "Timestamp.h"
 #include <time.h>
 
+namespace mymuduo {
+
 Timestamp::Timestamp() : microSecondSinceEpoch_(0) {}
 
 Timestamp::Timestamp(int64_t microSecondSinceEpoch) 
@@ -24,9 +26,4 @@ std::string Timestamp::toString() const {
     return buf;
 }
 
-// #include <iostream>
-
-// int main() {
-//     std::cout << Timestamp::now().toString() << std::endl;
-//     return 0;
-// }
+}   // namespace mymuduo

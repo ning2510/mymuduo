@@ -5,6 +5,8 @@
 #include <netinet/in.h>
 #include <string>
 
+namespace mymuduo {
+
 // 封装 socket 地址类型
 class InetAddress {
 public:
@@ -21,5 +23,7 @@ public:
 private:
 	sockaddr_in addr_;
 };
+
+}	// namespace mymuduo
 
 #endif

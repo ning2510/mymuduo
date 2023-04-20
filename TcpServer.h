@@ -15,6 +15,8 @@
 #include <atomic>
 #include <unordered_map>
 
+namespace mymuduo {
+
 class TcpServer : noncopyable {
 public:
     using ThreadInitCallback = std::function<void(EventLoop *)>;
@@ -66,5 +68,7 @@ private:
     int nextConnId_;
     ConnectionMap connections_;                         // 保存所有的连接
 };
+
+}   // namespace mymuduo
 
 #endif

@@ -4,6 +4,8 @@
 #include <string>
 #include "noncopyable.h"
 
+namespace mymuduo {
+
 // INFO("%s %d", arg1, arg2)
 #define LOG_INFO(logmsgFormat, ...) \
 	do \
@@ -78,5 +80,7 @@ private:
 	}
 
 };
+
+}	// namespace mymuduo
 
 #endif

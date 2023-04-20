@@ -3,6 +3,8 @@
 
 #include <memory>
 
+namespace mymuduo {
+
 EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseLoop, const std::string &nameArg)
     : baseLoop_(baseLoop),
       name_(nameArg),
@@ -57,3 +59,5 @@ std::vector<EventLoop *> EventLoopThreadPool::getAllLoops() {
         return loops_;
     }
 }
+
+}   // namespace mymuduo

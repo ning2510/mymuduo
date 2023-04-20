@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <string.h>
 
+namespace mymuduo {
+
 // 网络库底层的缓冲区类型
 class Buffer {
 public:
@@ -156,5 +158,6 @@ private:
     size_t writerIndex_;
 };
 
+}   // namespace mymuduo
 
 #endif

@@ -8,6 +8,7 @@
 #include <string>
 #include <functional>
 
+using namespace mymuduo;
 using namespace std::placeholders;
 
 class EchoServer {

@@ -4,6 +4,8 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+namespace mymuduo {
+
 /**
  * 从 fd 上读取数据（Poller 工作在 LT 模式）
  * Buffer 缓冲区是有大小的，但是从 fd 上读数据时却不知道 tcp 数据最终的大小
@@ -42,3 +44,5 @@ ssize_t Buffer::writeFd(int fd, int *saveErrno) {
     }
     return n;
 }
+
+}   // namespace mymuduo

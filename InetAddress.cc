@@ -2,6 +2,8 @@
 #include <strings.h>
 #include <string.h>
 
+namespace mymuduo {
+
 InetAddress::InetAddress(uint16_t port, std::string ip) {
     bzero(&addr_, sizeof(addr_));
     // 存储到 addr_ 中的都是网络字节序
@@ -32,13 +34,4 @@ uint16_t InetAddress::toPort() const {
     return ntohs(addr_.sin_port);
 }
 
-// #include <iostream>
-
-// int main() {
-//     InetAddress addr(8080);
-//     std::cout << addr.toIpPort() << std::endl;
-//     std::cout << addr.toPort() << std::endl;
-//     std::cout << addr.toIp() << std::endl;
-
-//     return 0;
-// }
+}   // namespace mymuduo

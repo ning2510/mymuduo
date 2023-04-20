@@ -8,6 +8,8 @@
 
 #include "noncopyable.h"
 
+namespace mymuduo {
+
 class EventLoop;
 class EventLoopThread;
 
@@ -42,5 +44,7 @@ private:
     std::vector <EventLoop *> loops_;
 
 };
+
+}   // namespace mymuduo
 
 #endif

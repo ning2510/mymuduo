@@ -7,6 +7,8 @@
 #include <functional>
 #include <memory>
 
+namespace mymuduo {
+
 class Channel;
 class EventLoop;
 
@@ -68,5 +70,6 @@ private:
     int retryDelayMs_;
 };
 
+}   // namespace mymuduo
 
 #endif

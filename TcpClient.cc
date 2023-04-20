@@ -6,6 +6,8 @@
 
 using namespace std::placeholders;
 
+namespace mymuduo {
+
 namespace detail {
     void removeConnection(EventLoop *loop, const TcpConnectionPtr &conn) {
 
@@ -142,3 +144,5 @@ void TcpClient::removeConnection(const TcpConnectionPtr &conn) {
         connector_->restart();
     }
 }
+
+}   // namespace mymuduo

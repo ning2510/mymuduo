@@ -6,6 +6,8 @@
 #include "noncopyable.h"
 #include "Timestamp.h"
 
+namespace mymuduo {
+
 class Channel;
 class EventLoop;
 
@@ -36,5 +38,7 @@ private:
 	EventLoop *ownerLoop_;		// 定义 Poller 所属的事件循环 EventLoop
 
 };
+
+}	// namespace mymuduo
 
 #endif

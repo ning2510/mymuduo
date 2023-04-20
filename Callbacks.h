@@ -4,6 +4,8 @@
 #include <memory>
 #include <functional>
 
+namespace mymuduo {
+
 class Buffer;
 class TcpConnection;
 class Timestamp;
@@ -15,5 +17,7 @@ using WriteCompleteCallback = std::function<void(const TcpConnectionPtr&)>;
 using MessageCallback = std::function<void(const TcpConnectionPtr&, Buffer *, Timestamp)>;
 
 using HighWaterMarkCallback = std::function<void(const TcpConnectionPtr&, size_t)>;
+
+}   // namespace mymuduo
 
 #endif

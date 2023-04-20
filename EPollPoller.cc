@@ -5,6 +5,8 @@
 #include "Logger.h"
 #include "Channel.h"
 
+namespace mymuduo {
+
 const int kNew = -1;        // channel 未添加到 poller 中
 const int kAdded = 1;       // channel 已添加到 poller 中
 const int kDeleted = 2;     // channel 从 poller 中删除
@@ -123,3 +125,5 @@ void EPollPoller::update(int operation, Channel *channel) {
         }
     }
 }
+
+}   // namespace mymuduo

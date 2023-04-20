@@ -8,6 +8,8 @@
 #include "noncopyable.h"
 #include "Thread.h"
 
+namespace mymuduo {
+
 class EventLoop;
 
 class EventLoopThread : noncopyable {
@@ -32,5 +34,7 @@ private:
     std::condition_variable cond_;
     ThreadInitCallback callback_;
 };
+
+}   // namespace mymuduo
 
 #endif

@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <memory>
 
+namespace mymuduo {
+
 // 防止一个线程创建多个 EventLoop (thread_local 的机制)
 __thread EventLoop *t_loopInThisThread = nullptr;
 
@@ -178,3 +180,5 @@ void EventLoop::abortNotInLoopThread() {
     LOG_FATAL("EventLoop::abortNotInLoopThread - EventLoop[%p], its threadId_ = %d, current thread id = %d",
             this, threadId_, CurrentThread::tid());
 }
+
+}   // namespace mymuduo

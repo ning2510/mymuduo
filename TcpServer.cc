@@ -5,6 +5,8 @@
 #include <functional>
 #include <strings.h>
 
+namespace mymuduo {
+
 static EventLoop *CheckLoopNotNull(EventLoop *loop) {
     if(loop == nullptr) {
         LOG_FATAL("%s : %s : %d mainLoop is null !", __FILE__, __FUNCTION__, __LINE__);
@@ -106,3 +108,5 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn) {
     ioLoop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
 
 }
+
+}   // namespace mymuduo

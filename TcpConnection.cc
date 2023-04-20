@@ -12,6 +12,8 @@
 #include <strings.h>
 #include <string>
 
+namespace mymuduo {
+
 static EventLoop *CheckLoopNotNull(EventLoop *loop) {
     if(loop == nullptr) {
         LOG_FATAL("%s : %s : %d TcpConnection is null !", __FILE__, __FUNCTION__, __LINE__);
@@ -232,3 +234,5 @@ void TcpConnection::forceCloseInLoop() {
         handleClose();
     }
 }
+
+}   // namespace mymuduo
