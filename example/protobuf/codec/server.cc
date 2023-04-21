@@ -35,10 +35,8 @@ ChatServer::ChatServer(EventLoop *loop, const InetAddress &listenAddr)
 
 
 void ChatServer::onConnection(const TcpConnectionPtr &conn) {
-    LOG_INFO("%s -> %s is %s",
-                conn->localAddress().toIpPort().c_str(),
-                conn->peerAddress().toIpPort().c_str(),
-                conn->connected() ? "UP" : "DOWN");
+    LOG_INFO << conn->localAddress().toIpPort() << " -> " << conn->peerAddress().toIpPort() 
+             << " is " << conn->connected() ? "UP" : "DOWN";
 
     if(conn->connected()) {
         connections_.insert(conn);
@@ -51,7 +49,7 @@ void ChatServer::onUnknownMessage(const TcpConnectionPtr &conn,
                         const MessagePtr &message,
                         Timestamp)
 {
-    LOG_INFO("onUnknownMessage %s", message->GetTypeName());
+    LOG_INFO << "onUnknownMessage " << message->GetTypeName();
     conn->shutdown();
 }
 
@@ -59,7 +57,7 @@ void ChatServer::onChat(const TcpConnectionPtr &conn,
             const ChatPtr &message,
             Timestamp)
 {
-    LOG_INFO("onChat: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onChat: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "id = " << message->id() << endl;
     cout << "name = " << message->name() << endl;
@@ -72,7 +70,7 @@ void ChatServer::onAdd(const TcpConnectionPtr &conn,
             const AddPtr &message,
             Timestamp)
 {
-    LOG_INFO("onAdd: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onAdd: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "id = " << message->id() << endl;
     cout << "toid = " << message->toid() << endl;
@@ -82,7 +80,7 @@ void ChatServer::onCreateGroup(const TcpConnectionPtr &conn,
             const CreateGroupPtr &message,
             Timestamp)
 {
-    LOG_INFO("onCreateGroup: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onCreateGroup: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "id = " << message->id() << endl;
     cout << "name = " << message->name() << endl;
@@ -93,7 +91,7 @@ void ChatServer::onRegister(const TcpConnectionPtr &conn,
             const RegisterPtr &message,
             Timestamp)
 {
-    LOG_INFO("onRegister: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onRegister: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "username = " << message->username() << endl;
     cout << "password = " << message->password() << endl;
@@ -103,7 +101,7 @@ void ChatServer::onLogin(const TcpConnectionPtr &conn,
             const LoginPtr &message,
             Timestamp)
 {
-    LOG_INFO("onLogin: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onLogin: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "id = " << message->id() << endl;
     cout << "password = " << message->password() << endl;
@@ -113,7 +111,7 @@ void ChatServer::onLogout(const TcpConnectionPtr &conn,
             const LogoutPtr &message,
             Timestamp)
 {
-    LOG_INFO("onLogout: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onLogout: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "id = " << message->id() << endl;
 }
@@ -122,7 +120,7 @@ void ChatServer::onAnswer(const TcpConnectionPtr &conn,
             const AnswerPtr &message,
             Timestamp)
 {
-    LOG_INFO("onAnswer: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onAnswer: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "error = " << message->error() << endl;
     cout << "id = " << message->id() << endl;
@@ -140,13 +138,15 @@ void ChatServer::onAnswer(const TcpConnectionPtr &conn,
 }
 
 int main(int argc, char **argv) {
+    mymuduo::initLog("server_log");
+    
     uint16_t port = 9999;
 
     if(argc > 1) {
         port = atoi(argv[1]);
     }
 
-    LOG_INFO("[conf] use port = %d", port);
+    cout << "[conf] use port = " << port << endl;
 
     EventLoop loop;
     InetAddress serverAddr(port);

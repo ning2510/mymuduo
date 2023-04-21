@@ -10,7 +10,7 @@ namespace mymuduo {
 static int createNonblocking() {
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
     if(sockfd < 0) {
-        LOG_FATAL("%s : %s : %d listen socket create err : %d", __FILE__, __FUNCTION__, __LINE__, errno);
+        LOG_FATAL << "listen socket create err : " << errno;
     }
     return sockfd;
 }
@@ -22,11 +22,11 @@ Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
       state_(kDisconnected),
       retryDelayMs_(kInitRetryDelayMs)
 {
-    LOG_INFO("Connector[%p] constructor", this);
+    LOG_INFO << "Connector [" << this << "] constructor";
 }
 
 Connector::~Connector() {
-    LOG_INFO("Connector[%p] destructor", this);
+    LOG_INFO << "Connector [" << this << "] destructor";
 }
 
 void Connector::start() {
@@ -40,7 +40,7 @@ void Connector::startInLoop() {
         if(connect_) {
             connect();
         } else {
-            LOG_DEBUG("Connector::startInLoop don't connect");
+            LOG_DEBUG << "Connector::startInLoop don't connect";
         }
     }
 }
@@ -72,7 +72,7 @@ void Connector::connect() {
     socklen_t len = sizeof(sockaddr_in);
     int ret = ::connect(sockfd, (sockaddr *)serverAddr_.getSockAddr(), len);
     int savedErrno = (ret == 0) ? 0 : errno;
-    LOG_INFO("errno = %d", savedErrno);
+    LOG_INFO << "errno = " << savedErrno;
     switch (savedErrno) {
         case 0:
         case EINPROGRESS:
@@ -96,12 +96,12 @@ void Connector::connect() {
         case EBADF:
         case EFAULT:
         case ENOTSOCK:
-        LOG_ERROR("connect error in Connector::startInLoop %d", savedErrno);
+        LOG_ERROR << "connect error in Connector::startInLoop " << savedErrno;
         ::close(sockfd);
         break;
 
         default:
-        LOG_ERROR("Unexpected error in Connector::startInLoop %d", savedErrno);
+        LOG_ERROR << "Unexpected error in Connector::startInLoop " << savedErrno;
         ::close(sockfd);
         // connectErrorCallback_();
         break;
@@ -147,7 +147,7 @@ void Connector::handleWrite() {
 }
 
 void Connector::handleError() {
-    LOG_ERROR("Connector::handleError state = %d", state_);
+    LOG_ERROR << "Connector::handleError state = " << state_;
     if(state_ == kConnecting) {
         int sockfd = removeAndResetChannel();
         int err;
@@ -169,7 +169,7 @@ void Connector::retry(int sockfd) {
     /* retry is disabled, because not add TimerQueue */
 
     // if(connect_) {
-    //     LOG_INFO("Connector::retry connect to %s", serverAddr_.toIpPort().c_str());
+    //     LOG_INFO << "Connector::retry connect to " << serverAddr_.toIpPort();
     //     startInLoop();
     // }
 }

@@ -21,7 +21,7 @@ const int kPollTimeMs = 10000;
 int createEventfd() {
     int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if(evtfd < 0) {
-        LOG_FATAL("eventfd error: %d", errno);
+        LOG_FATAL << "eventfd error : " << errno;
     }
     return evtfd;
 }
@@ -35,9 +35,9 @@ EventLoop::EventLoop()
       wakeupFd_(createEventfd()),
       wakeupChannel_(new Channel(this, wakeupFd_))
 {
-    LOG_DEBUG("EventLoop created %p in thread %d", this, threadId_);
+    LOG_DEBUG << "EventLoop created [" << this << "] in thread " << threadId_;
     if(t_loopInThisThread) {
-        LOG_FATAL("Another EventLoop %p exists in this thread %d", t_loopInThisThread, threadId_);
+        LOG_FATAL << "Anthor EventLoop [" << this <<  "] exist in this thread " << threadId_; 
     } else {
         t_loopInThisThread = this;
     }
@@ -60,7 +60,7 @@ void EventLoop::loop() {
     looping_ = true;
     quit_ = false;
 
-    LOG_INFO("EventLoop %p start looping", this);
+    LOG_INFO << "EventLoop [" << this << "] start looping";
 
     while(!quit_) {
         activeChannels_.clear();
@@ -80,7 +80,7 @@ void EventLoop::loop() {
         doPendingFunctors();
     }
 
-    LOG_INFO("EventLoop %p stop looping", this);
+    LOG_INFO << "EventLoop [" << this << "] start looping";
 }
 
 /**
@@ -130,7 +130,7 @@ void EventLoop::handleRead() {
     uint64_t one = 1;
     ssize_t n = read(wakeupFd_, &one, sizeof(one));
     if(n != sizeof(one)) {
-        LOG_ERROR("EventLoop::handleRead() reads %ld bytes instead of 8", n);
+        LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
     }
 }
 
@@ -140,7 +140,7 @@ void EventLoop::wakeup() {
     uint64_t one = 1;
     ssize_t n = ::write(wakeupFd_, &one, sizeof(one));
     if(n != sizeof(one)) {
-        LOG_ERROR("EventLoop::wakeup() writes %ld bytes instead of 8", n);
+        LOG_ERROR << "EventLoop::wakeup() writes " << n << " bytes instead of 8";
     }
 }
 
@@ -177,8 +177,8 @@ void EventLoop::doPendingFunctors() {
 }
 
 void EventLoop::abortNotInLoopThread() {
-    LOG_FATAL("EventLoop::abortNotInLoopThread - EventLoop[%p], its threadId_ = %d, current thread id = %d",
-            this, threadId_, CurrentThread::tid());
+    LOG_FATAL << "EventLoop::abortNotInLoopThread - EventLoop[" << this << "], its threadId_ = " 
+              << threadId_ << ", current thread id = " << CurrentThread::tid();
 }
 
 }   // namespace mymuduo

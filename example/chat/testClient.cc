@@ -50,17 +50,17 @@ public:
 private:
     void onConnection(const TcpConnectionPtr &conn) {
         if(conn->connected()) {
-            LOG_INFO("Connection UP : %s", conn->peerAddress().toIpPort().c_str());
-                {
-                    unique_lock<mutex> lock(mutex_);
-                    conn_ = conn;
-                }
+            LOG_INFO << "Connection UP : " << conn->peerAddress().toIpPort();
+            {
+                unique_lock<mutex> lock(mutex_);
+                conn_ = conn;
+            }
         } else {
-            LOG_INFO("Connection DOWN : %s", conn->peerAddress().toIpPort().c_str());
-                {
-                    unique_lock<mutex> lock(mutex_);
-                    conn_.reset();
-                }
+            LOG_INFO << "Connection DOWN : " << conn->peerAddress().toIpPort();
+            {
+                unique_lock<mutex> lock(mutex_);
+                conn_.reset();
+            }
         }
     }
 
@@ -78,6 +78,8 @@ private:
 
 // ./client ip port
 int main(int argc, char **argv) {
+    mymuduo::initLog("client_log");
+
     string ip = "127.0.0.1";
     uint16_t port = 9999;
 
@@ -95,6 +97,7 @@ int main(int argc, char **argv) {
 
     string msg;
     while(1) {
+        cout << "Please input: ";
         cin >> msg;
         client.send(msg);
     }

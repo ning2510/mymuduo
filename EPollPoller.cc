@@ -17,7 +17,7 @@ EPollPoller::EPollPoller(EventLoop *loop)
        events_(kInitEventListSize)
 {
     if(epollfd_ < 0) {
-        LOG_FATAL("epoll_create error: %d", errno);
+        LOG_FATAL << "epoll_create error : " << errno;
     }
 }
 
@@ -26,24 +26,24 @@ EPollPoller::~EPollPoller() {
 }
 
 Timestamp EPollPoller::poll(int timeoutMs, ChannelList *activeChannels) {
-    LOG_DEBUG("func = %s, fd total count %lu", __FUNCTION__, channels_.size());
+    LOG_DEBUG << "fd total count = " << channels_.size();
 
     int numEvents = ::epoll_wait(epollfd_, &*events_.begin(), static_cast<int>(events_.size()), timeoutMs);
     int saveErrno = errno;
     Timestamp now(Timestamp::now());
 
     if(numEvents > 0) {
-        LOG_INFO("%d events happened", numEvents);
+        LOG_INFO << numEvents << " events happened";
         fillActiveChannels(numEvents, activeChannels);
         if(numEvents == events_.size()) {
             events_.resize(events_.size() * 2);
         }
     } else if(numEvents == 0) {
-        LOG_DEBUG("%s timeout", __FUNCTION__);
+        LOG_DEBUG << "timeout";
     } else {
         if(saveErrno != EINTR) {
             errno = saveErrno;
-            LOG_ERROR("EPollPoller::poll() error !");
+            LOG_ERROR << "EPollPoller::poll() error !";
         }
     }
 
@@ -55,7 +55,7 @@ Timestamp EPollPoller::poll(int timeoutMs, ChannelList *activeChannels) {
 */
 void EPollPoller::updateChannel(Channel *channel) {
     const int index = channel->index();
-    LOG_INFO("func = %s, fd = %d, events = %d, index = %d", __FUNCTION__, channel->fd(), channel->events(), index);
+    LOG_INFO << "fd = " << channel->fd() << ", events = " << channel->events() << ", index = " << index;
 
     // kNew：Channel 未添加到 Poller 中
     // kAdded：Channel 已经添加到 Poller 中
@@ -85,7 +85,7 @@ void EPollPoller::removeChannel(Channel *channel) {
     int fd = channel->fd();
     channels_.erase(fd);
 
-    LOG_INFO("func = %s, fd = %d", __FUNCTION__, fd);
+    LOG_INFO << "fd = " << fd;
 
     int index = channel->index();
     if(index == kAdded) {
@@ -119,9 +119,9 @@ void EPollPoller::update(int operation, Channel *channel) {
 
     if(::epoll_ctl(epollfd_, operation, fd, &event) < 0) {
         if(operation == EPOLL_CTL_DEL) {
-            LOG_ERROR("epoll_ctl del error: %d", errno);
+            LOG_ERROR << "epoll_ctl del error : " << errno;
         } else {
-            LOG_FATAL("epoll_ctl add/mod error: %d", errno);
+            LOG_FATAL << "epoll_ctl add/mod error : " << errno;
         }
     }
 }

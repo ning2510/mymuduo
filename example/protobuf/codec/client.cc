@@ -17,10 +17,8 @@ ChatClient::ChatClient(EventLoop *loop,
 }
 
 void ChatClient::onConnection(const TcpConnectionPtr &conn) {
-    LOG_INFO("%s -> %s is %s",
-                conn->localAddress().toIpPort().c_str(),
-                conn->peerAddress().toIpPort().c_str(),
-                conn->connected() ? "UP" : "DOWN");
+    LOG_INFO << conn->localAddress().toIpPort() << " -> " << conn->peerAddress().toIpPort() 
+             << " is " << conn->connected() ? "UP" : "DOWN";
 
     if(conn->connected()) {
         unique_lock<mutex> lock(mutex_);
@@ -35,14 +33,14 @@ void ChatClient::onUnknownMessage(const TcpConnectionPtr &,
                             const MessagePtr &message,
                             Timestamp)
 {
-    LOG_INFO("onUnknownMessage %s", message->GetTypeName().c_str());
+    LOG_INFO << "onUnknownMessage " << message->GetTypeName();
 }
 
 void ChatClient::onAnswer(const TcpConnectionPtr &,
                 const AnswerPtr &message,
                 Timestamp)
 {
-    LOG_INFO("onAnswer: %s", message->GetTypeName().c_str());
+    LOG_INFO << "onAnswer: " << message->GetTypeName();
     cout << "msgid = " << message->msgid() << endl;
     cout << "error = " << message->error() << endl;
     cout << "id = " << message->id() << endl;
@@ -50,6 +48,8 @@ void ChatClient::onAnswer(const TcpConnectionPtr &,
 
 
 int main(int argc, char **argv) {
+    mymuduo::initLog("client_log");
+
     string ip = "127.0.0.1";
     uint16_t port = 9999;
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
         ip = argv[2];
     }
 
-    LOG_INFO("[conf] use ip = %s, port = %d", ip.c_str(), port);
+    LOG_INFO << "[conf] use ip = " << ip << ", port = " << port;
 
     EventLoopThread loopThread;
     InetAddress serverAddr(port, ip);

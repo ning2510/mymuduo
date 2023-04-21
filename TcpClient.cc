@@ -15,10 +15,8 @@ namespace detail {
 }
 
 void defaultConnectionCallback(const TcpConnectionPtr &conn) {
-    LOG_INFO("%s -> %s is %s", 
-             conn->localAddress().toIpPort().c_str(),
-             conn->peerAddress().toIpPort().c_str(),
-             (conn->connected() ? "UP" : "DOWN"));
+    LOG_INFO << conn->localAddress().toIpPort() << " -> " << conn->peerAddress().toIpPort() 
+             << " is " << (conn->connected() ? "UP" : "DOWN");
 }
 
 void defaultMessageCallback(const TcpConnectionPtr&, Buffer* buf, Timestamp) {
@@ -41,7 +39,7 @@ TcpClient::TcpClient(EventLoop *loop,
 }
 
 TcpClient::~TcpClient() {
-    LOG_INFO("TcpClient::~TcpClient [%s]", name_.c_str());
+    LOG_INFO << "TcpClient::~TcpClient [" << name_ << "]";
 
     TcpConnectionPtr conn;
     bool unique = false;
@@ -66,9 +64,7 @@ TcpClient::~TcpClient() {
 }
 
 void TcpClient::connect() {
-    LOG_INFO("TcpClient::connect [%s] - connecting to %s", 
-            name_.c_str(),
-            connector_->serverAddress().toIpPort().c_str());
+    LOG_INFO << "TcpClient::connect [" << name_ << "] - connecting to " << connector_->serverAddress().toIpPort();
 
     connect_ = true;
     connector_->start();
@@ -96,7 +92,7 @@ void TcpClient::newConnection(int sockfd) {
     ::bzero(&peeraddr, sizeof(peeraddr));
     socklen_t addrlen = sizeof(peeraddr);
     if(::getpeername(sockfd, (sockaddr *)&peeraddr, &addrlen) > 0) {
-        LOG_ERROR("getpeername error = %d", errno);
+        LOG_ERROR << "getpeername error : " << errno;
     }
 
     InetAddress peerAddr(peeraddr);
@@ -110,7 +106,7 @@ void TcpClient::newConnection(int sockfd) {
     ::bzero(&localaddr, sizeof(localaddr));
     addrlen = sizeof(localaddr);
     if(::getsockname(sockfd, (sockaddr *)&localaddr, &addrlen) > 0) {
-        LOG_ERROR("getsockname error = %d", errno);
+        LOG_ERROR << "getsockname error : " << errno;
     }
 
     InetAddress localAddr(localaddr);
@@ -139,8 +135,8 @@ void TcpClient::removeConnection(const TcpConnectionPtr &conn) {
 
     loop_->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
     if(retry_ && connect_) {
-        LOG_INFO("TcpClient::removeConnection [%s] reconnecting to %s",
-                 name_.c_str(), connector_->serverAddress().toIpPort().c_str());
+        LOG_INFO << "TcpClient::removeConnection [" << name_ << "] reconnecting to " << connector_->serverAddress().toIpPort();
+
         connector_->restart();
     }
 }

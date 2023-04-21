@@ -1,86 +1,190 @@
-#ifndef _LOGGER_H
-#define _LOGGER_H
+#ifndef _LOG_H
+#define _LOG_H
 
+#include <sstream>
 #include <string>
-#include "noncopyable.h"
+#include <memory>
+#include <time.h>
+#include <sys/time.h>
+#include <vector>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <semaphore.h>
 
 namespace mymuduo {
 
-// INFO("%s %d", arg1, arg2)
-#define LOG_INFO(logmsgFormat, ...) \
-	do \
-	{ \
-		Logger &logger = Logger::instance(); \
-		logger.setLogLevel(INFO); \
-		char buf[1024] = {0}; \
-		snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
-		logger.log(buf); \
-	} while (0);
-
-#define LOG_ERROR(logmsgFormat, ...) \
-	do \
-	{ \
-		Logger &logger = Logger::instance(); \
-		logger.setLogLevel(ERROR); \
-		char buf[1024] = {0}; \
-		snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
-		logger.log(buf); \
-	} while (0);
-
-#define LOG_FATAL(logmsgFormat, ...) \
-	do \
-	{ \
-		Logger &logger = Logger::instance(); \
-		logger.setLogLevel(FATAL); \
-		char buf[1024] = {0}; \
-		snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
-		logger.log(buf); \
-		exit(-1); \
-	} while (0);
-
-#ifdef MUDEBUG
-#define LOG_DEBUG(logmsgFormat, ...) \
-	do \
-	{ \
-		Logger &logger = Logger::instance(); \
-		logger.setLogLevel(DEBUG); \
-		char buf[1024] = {0}; \
-		snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__); \
-		logger.log(buf); \
-	} while (0);	
-#else
-	#define LOG_DEBUG(logmsgFormat, ...)
-#endif
-
-// 定义日志级别	  INFO   ERROR   FATAL   DEBUG
 enum LogLevel {
-	INFO, 	// 普通信息
-	ERROR,	// 错误信息
-	FATAL,	// core dump
-	DEBUG,	// 调试信息
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3,
+    ERROR = 4,
+	FATAL = 5,
+    NONE = 6
 };
 
-// 输出一个日志类
-class Logger {
+static LogLevel g_log_level = DEBUG;
+
+#define LOG_DEBUG \
+    if(mymuduo::openLog() && mymuduo::LogLevel::DEBUG >= mymuduo::g_log_level) \
+        mymuduo::LogTmp(mymuduo::LogEvent::ptr(new mymuduo::LogEvent(mymuduo::LogLevel::DEBUG, __FILE__, __LINE__, __func__))).getStringStream()
+
+#define LOG_INFO \
+    if(mymuduo::openLog() && mymuduo::LogLevel::INFO >= mymuduo::g_log_level)  \
+        mymuduo::LogTmp(mymuduo::LogEvent::ptr(new mymuduo::LogEvent(mymuduo::LogLevel::INFO, __FILE__, __LINE__, __func__))).getStringStream()
+
+#define LOG_WARN \
+    if(mymuduo::openLog() && mymuduo::LogLevel::WARN >= mymuduo::g_log_level)  \
+        mymuduo::LogTmp(mymuduo::LogEvent::ptr(new mymuduo::LogEvent(mymuduo::LogLevel::WARN, __FILE__, __LINE__, __func__))).getStringStream()
+
+#define LOG_ERROR \
+    if(mymuduo::openLog() && mymuduo::LogLevel::ERROR >= mymuduo::g_log_level) \
+        mymuduo::LogTmp(mymuduo::LogEvent::ptr(new mymuduo::LogEvent(mymuduo::LogLevel::ERROR, __FILE__, __LINE__, __func__))).getStringStream()
+
+#define LOG_FATAL \
+    if(mymuduo::openLog() && mymuduo::LogLevel::FATAL >= mymuduo::g_log_level) \
+        mymuduo::LogTmp(mymuduo::LogEvent::ptr(new mymuduo::LogEvent(mymuduo::LogLevel::FATAL, __FILE__, __LINE__, __func__))).getStringStream()
+
+
+/* 5MB 500ms */
+void initLog(const char *file_name, const char *file_path = "./", int max_size = 5 * 1024 * 1024, int sync_interval = 500, LogLevel level = DEBUG);
+
+pid_t getpid();
+pid_t gettid();
+bool openLog();
+
+void setLogLevel(LogLevel level);
+LogLevel stringToLevel(const std::string &str);
+std::string levelToString(LogLevel level);
+
+class LogEvent {
 public:
-	// 获取日志唯一的实例对象
-	static Logger &instance();
+    typedef std::shared_ptr<LogEvent> ptr;
 
-	// 设置日志级别
-	void setLogLevel(int level);
+    LogEvent(LogLevel level, const char *file_name, int line, const char *func_name);
+    ~LogEvent() {}
 
-	// 写日志
-	void log(std::string msg);
+    void log();
+    std::stringstream &getStringStream();
+    LogLevel level_;
+private:
+    timeval timeval_;
+    
+
+    pid_t pid_;
+    pid_t tid_;
+
+    int line_;
+    std::string file_name_;
+    std::string func_name_;
+
+    std::stringstream ss_;
+};
+
+
+class LogTmp {
+public:
+    explicit LogTmp(LogEvent::ptr event) : event_(event) {}
+    ~LogTmp() {
+        event_->log();
+		if(event_->level_ == LogLevel::FATAL) exit(0);
+    }
+
+    std::stringstream &getStringStream() {
+        return event_->getStringStream();
+    }
 
 private:
-
-	int LogLevel_;
-	Logger() {
-
-	}
-
+    LogEvent::ptr event_;
 };
 
-}	// namespace mymuduo
+
+class AsyncLogger {
+public:
+    typedef std::shared_ptr<AsyncLogger> ptr;
+
+    AsyncLogger(const char *file_name, const char *file_path, int max_size);
+    ~AsyncLogger() {
+        pthread_cond_destroy(&cond_);
+        pthread_mutex_destroy(&mutex_);
+    }
+
+    void push(std::vector<std::string> &buffer);
+    void flush();
+    void stop();
+    void join();
+
+    static void *execute(void *arg);
+
+private:
+    std::string file_name_;
+    std::string file_path_;
+    std::string date_;
+
+    int max_size_;
+    int no_;
+
+    bool stop_;
+    bool need_reopen_;
+    FILE *file_handle_;
+
+    sem_t sem_;
+    pthread_mutex_t mutex_;
+    pthread_t thread_;
+    pthread_cond_t cond_;
+    
+    std::queue <std::vector<std::string>> m_tasks;
+};
+
+
+class Logger {
+public:
+    typedef std::shared_ptr<Logger> ptr;
+
+    Logger() : is_init_(false), stop_(false) {
+        ::pthread_mutex_init(&mutex_, nullptr);
+    }
+    ~Logger() {
+        stop();
+        async_logger_->join();
+        ::pthread_mutex_destroy(&mutex_);
+    }
+
+    void init(const char *file_name, const char *file_path, 
+              int max_size, int sync_interval);
+
+    
+    /* tmp method */
+    static void *collect(void *arg);
+    void join() {
+        ::pthread_join(thread_, nullptr);
+    }
+
+    void start();
+    void stop();
+    void loopFunc();
+    void push(const std::string &msg);
+
+    AsyncLogger::ptr getAsyncLogger() {
+        return async_logger_;
+    }
+
+    std::vector<std::string> buffer_;
+
+private:
+    /* tmp method */
+    bool stop_;
+    pthread_t thread_;
+
+    pthread_mutex_t mutex_;
+    bool is_init_;
+    int sync_interval_;
+
+    AsyncLogger::ptr async_logger_;
+};
+
+void Exit(int code);
+
+}   // namespace mymuduo
 
 #endif

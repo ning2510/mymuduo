@@ -35,10 +35,10 @@ private:
     // 连接建立或断开的回调
     void onConnection(const TcpConnectionPtr &conn) {
         if(conn->connected()) {
-            LOG_INFO("Connection UP : %s", conn->peerAddress().toIpPort().c_str());
+            LOG_INFO << "Connection UP : " << conn->peerAddress().toIpPort();
             connections_.insert(conn);
         } else {
-            LOG_INFO("Connection DOWN : %s", conn->peerAddress().toIpPort().c_str());
+            LOG_INFO << "Connection DOWN : " << conn->peerAddress().toIpPort();
             connections_.erase(conn);
         }
     }
@@ -61,6 +61,8 @@ private:
 };
 
 int main(int argc, char **argv) {
+    mymuduo::initLog("server_log");
+
     uint16_t port = 9999;
     if(argc > 1) {
 	    port = atoi(argv[1]);	

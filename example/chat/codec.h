@@ -24,10 +24,10 @@ public:
             int32_t len = ntohl(nw32);
             // int32_t len = __bswap_32 (nw32);
 
-            LOG_INFO("[recv msg] len = %d, nw32 = %d", len, nw32);
+            LOG_INFO << "[recv msg] len = " << len << ", nw32 = " << nw32;
 
             if(len > 65536 || len < 0) {
-                LOG_ERROR("Invalid length = %d", len);
+                LOG_ERROR << "Invalid length = " << len;
                 conn->shutdown();
             } else if(buf->readableBytes() >= len + kHeaderLen) {
                 buf->retrieve(kHeaderLen);
@@ -49,7 +49,7 @@ public:
         buf.prepend(&nw32, sizeof(nw32));
         std::string message = buf.retrieveAllAsString();
 
-        LOG_INFO("[send msg] len = %d, nw32 = %d", message.size(), nw32);
+        LOG_INFO << "[send msg] len = " << message.size() << ", nw32 = " << nw32;
 
         conn->send(message);
     }

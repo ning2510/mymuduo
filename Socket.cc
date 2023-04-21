@@ -16,13 +16,13 @@ Socket::~Socket() {
 
 void Socket::bindAddress(const InetAddress &localaddr) {
     if(::bind(sockfd_, (sockaddr *)localaddr.getSockAddr(), sizeof(sockaddr_in)) != 0) {
-        LOG_FATAL("bind sockfd: %d fail", sockfd_);
+        LOG_FATAL << "bins sockfd: " << sockfd_ << " fail";
     }
 }
 
 void Socket::listen() {
     if(::listen(sockfd_, 1024) != 0) {
-        LOG_FATAL("listen sockfd: %d fail", sockfd_);
+        LOG_FATAL << "listen sockfd: " << sockfd_ << " fail";
     }
 }
 
@@ -36,7 +36,7 @@ int Socket::accept(InetAddress *peeraddr) {
     if(connfd >= 0) {
         peeraddr->setSockAddr(addr);
     } else {
-        LOG_ERROR("%s : %s : %d : connfd error", __FILE__, __FUNCTION__, __LINE__);
+        LOG_ERROR << "connfd error";
     }
 
     return connfd;
@@ -44,7 +44,7 @@ int Socket::accept(InetAddress *peeraddr) {
 
 void Socket::shutdownWrite() {
     if(::shutdown(sockfd_, SHUT_WR) < 0) {
-        LOG_ERROR("shutdownWrite error");
+        LOG_ERROR << "Socket::shutdownwrite error";
     }
 }
 

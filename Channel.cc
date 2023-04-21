@@ -58,7 +58,7 @@ void Channel::handleEvent(Timestamp receiveTime) {
 /* 根据 poller 通知 Channel 发生的具体事件，由 Channel 负责调用具体的回调操作 */
 void Channel::handleEventWithGuard(Timestamp receiveTime) {
 
-    LOG_INFO("Channel handleEvent revents: %d", revents_);
+    LOG_INFO << "Channel handleEvent revents : " << revents_;
 
     if((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
         if(closeCallback_) {

@@ -17,7 +17,7 @@ void ProtobufCodec::fillEmptyBuffer(Buffer *buf, const google::protobuf::Message
     uint8_t *start = (uint8_t *)(buf->beginWirte());
     uint8_t *end = message.SerializeWithCachedSizesToArray(start);
     if(end - start != byte_size) {
-        LOG_FATAL("Protocol message was modified concurrently during serialization.");
+        LOG_FATAL << "Protocol message was modified concurrently during serialization.";
     }
     buf->hasWritten(byte_size);
 
@@ -26,11 +26,10 @@ void ProtobufCodec::fillEmptyBuffer(Buffer *buf, const google::protobuf::Message
 }
 
 void ProtobufCodec::onMessage(const TcpConnectionPtr &conn, Buffer *buf, Timestamp receiveTime) {
-    LOG_INFO("ProtobufCodec::onMessage receive message")
+    LOG_INFO << "ProtobufCodec::onMessage receive message";
     // nameLen + typeName + kHeaderLen(len)
     while(buf->readableBytes() >= kMinMessageLen + kHeaderLen) {
         const int32_t len = buf->peekInt32();
-        LOG_INFO("================ len = %d", len);
         if(len > kMaxMessageLen || len < kMinMessageLen) {
             errorCallback_(conn, buf, receiveTime, kInvalidLength);
             break;
@@ -130,7 +129,7 @@ void ProtobufCodec::defaultErrorCallback(const TcpConnectionPtr &conn,
                                     Timestamp receiveTime,
                                     ErrorCode errorCode) 
 {
-    LOG_ERROR("ProtobufCodec::defaultErrorCallback error = %s", errorCodeToString(errorCode).c_str());
+    LOG_ERROR << "ProtobufCodec::defaultErrorCallback error = " << errorCodeToString(errorCode);
     if(conn && conn->connected()) {
         conn->shutdown();
     }

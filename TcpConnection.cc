@@ -16,7 +16,7 @@ namespace mymuduo {
 
 static EventLoop *CheckLoopNotNull(EventLoop *loop) {
     if(loop == nullptr) {
-        LOG_FATAL("%s : %s : %d TcpConnection is null !", __FILE__, __FUNCTION__, __LINE__);
+        LOG_FATAL << "TcpConnection is null !";
     }
     return loop;
 }
@@ -42,13 +42,13 @@ TcpConnection::TcpConnection(EventLoop *loop,
     channel_->setCloseCallback(std::bind(&TcpConnection::handleClose, this));
     channel_->setErrorCallback(std::bind(&TcpConnection::handleError, this));
 
-    LOG_INFO("TcpConnection::ctor[%s] at fd = %d", name_.c_str(), sockfd);
+    LOG_INFO << "TcpConnection::ctor[" << name_ << "] at fd = " << sockfd;
     socket_->setKeepAlive(true);
 }
 
 
 TcpConnection::~TcpConnection() {
-    LOG_INFO("TcpConnection::dtor[%s] at fd = %d, state = %d", name_.c_str(), channel_->fd(), (int)state_);
+    LOG_INFO << "TcpConnection::dtor[" << name_ << "] at fd = " << channel_->fd() << ", state = " << state_;
 }
 
 void TcpConnection::send(const std::string &buf) {
@@ -73,10 +73,10 @@ void TcpConnection::sendInLoop(const void *data, size_t len) {
     size_t remaining = len;
     bool faultError = false;
 
-    LOG_INFO("send data = %s, len = %lu", (const char *)data, len);
+    LOG_INFO << "send data = " << (const char *)data << ", len = " << len;
     // 如果之前调用过该 TcpConnection 的 shutdown，就不能再发送了
     if(state_ == kDisconnected) {
-        LOG_ERROR("disconnected, give up writing!");
+        LOG_ERROR << "disconnected, give up writing!";
         return ;
     }
 
@@ -92,7 +92,8 @@ void TcpConnection::sendInLoop(const void *data, size_t len) {
         } else {    // nworte < 0
             nwrote = 0;
             if(errno != EWOULDBLOCK) {
-                LOG_ERROR("TcpConnection::sendInLoop error");
+                LOG_ERROR << "TcpConnection::sendInLoop error";
+
                 if(errno == EPIPE || errno == ECONNRESET) {     // SIGPIPE  RESET
                     faultError = true;
                 }
@@ -165,7 +166,7 @@ void TcpConnection::handleRead(Timestamp receiveTime) {
         handleClose();
     } else {
         errno = savedErrno;
-        LOG_ERROR("TcpConnection::handleRead error");
+        LOG_ERROR << "TcpConnection::handleRead error";
         handleError();
     }
 }
@@ -188,10 +189,10 @@ void TcpConnection::handleWrite() {
                 }
             }
         } else {
-            LOG_ERROR("TcpConnection::handleWrite error");
+            LOG_ERROR << "TcpConnection::handleWrite error";
         }
     } else {
-        LOG_ERROR("TcpConnection fd = %d is down, no more writing", channel_->fd());
+        LOG_ERROR << "TcpConnection fd = " << channel_->fd() << " is down, now more writing";
     }
 }
 
@@ -199,7 +200,7 @@ void TcpConnection::handleWrite() {
 // 在 handleClose 方法中分别调用了 用户注册的回调(connectionCallback_) 和 TcpServer 注册的关闭回调(closeCallback_)
 // 执行 TcpServer 注册的回调也就是 TcpServer::removeConnection 方法
 void TcpConnection::handleClose() {
-    LOG_INFO("TcpConnection::handleClose fd = %d, state = %d", channel_->fd(), (int)state_);
+    LOG_INFO << "TcpConnection::handleClose fd = " << channel_->fd() << ", state = " << state_;
     setState(kDisconnected);
     channel_->disableAll();     // 删除所有感兴趣的事件
 
@@ -217,7 +218,7 @@ void TcpConnection::handleError() {
     } else {
         err = optval;
     }
-    LOG_ERROR("TcpConnection::handleError name: %s - SO_ERROR: %d", name_.c_str(), err);
+    LOG_ERROR << "TcpConnection::handleError name: " << name_ << " - SO_ERROR: " << err;
 }
 
 void TcpConnection::forceClose() {
