@@ -354,6 +354,8 @@ void Logger::push(const std::string &msg) {
 }
 
 void Exit(int code) {
+    LOG_INFO << "logger will exit";
+
     g_logger->stop();
     g_logger->getAsyncLogger()->join();
 
