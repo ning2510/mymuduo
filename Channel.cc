@@ -15,9 +15,7 @@ Channel::Channel(EventLoop *loop, int fd)
       events_(0),
       revents_(0),
       index_(-1),   // kNew
-      tied_(false) {
-
-}
+      tied_(false) {}
 
 Channel::~Channel() {}
 
@@ -33,14 +31,11 @@ void Channel::tie(const std::shared_ptr<void> &obj) {
 /* 当改变 Channel 所表示 fd 的 events 事件后，update 负责在 poller 里面更改 fd 相应的事件 epoll_ctl */
 void Channel::update() {
     // 通过 Channel 所属的 EventLoop，调用 poller 的相应方法，注册 fd 的 events 事件
-
-    // TODO: ...
     loop_->updateChannel(this);
 }
 
 /* 在 Channel 所属的 EventLoop 中，把当前的 Channel 删除 */
 void Channel::remove() {
-    // TODO: ...
     loop_->removeChannel(this);
 }
 

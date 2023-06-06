@@ -33,8 +33,8 @@ EventLoop::EventLoop()
       threadId_(CurrentThread::tid()),
       poller_(Poller::newDefaultPoller(this)),
       wakeupFd_(createEventfd()),
-      wakeupChannel_(new Channel(this, wakeupFd_))
-{
+      wakeupChannel_(new Channel(this, wakeupFd_)) {
+
     LOG_DEBUG << "EventLoop created [" << this << "] in thread " << threadId_;
     if(t_loopInThisThread) {
         LOG_FATAL << "Anthor EventLoop [" << this <<  "] exist in this thread " << threadId_; 

@@ -14,8 +14,8 @@ const int kDeleted = 2;     // channel 从 poller 中删除
 EPollPoller::EPollPoller(EventLoop *loop)
      : Poller(loop), 
        epollfd_(epoll_create1(EPOLL_CLOEXEC)),
-       events_(kInitEventListSize)
-{
+       events_(kInitEventListSize) {
+        
     if(epollfd_ < 0) {
         LOG_FATAL << "epoll_create error : " << errno;
     }

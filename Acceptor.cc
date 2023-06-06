@@ -20,13 +20,12 @@ Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reusepor
     : loop_(loop),
       acceptSocket_(createNonblocking()),
       acceptChannel_(loop, acceptSocket_.fd()),
-      listening_(false)
-{
+      listening_(false) {
+
     acceptSocket_.setReuseAddr(true);
     acceptSocket_.setReusePort(reuseport);
     acceptSocket_.bindAddress(listenAddr);
     acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
-
 }
 
 Acceptor::~Acceptor() {
